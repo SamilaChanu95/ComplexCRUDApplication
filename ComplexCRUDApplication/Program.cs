@@ -1,3 +1,5 @@
+using AutoMapper;
+using ComplexCRUDApplication.Helper;
 using ComplexCRUDApplication.Repos;
 using ComplexCRUDApplication.Services;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +14,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<ICustomerService, CustomerService>();
 builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DBConnection")));
+
+var config = new MapperConfiguration(cfg => cfg.AddProfile(new MappingHandler()));
+IMapper mapper = config.CreateMapper();
+builder.Services.AddSingleton(mapper);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
