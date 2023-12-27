@@ -4,6 +4,6 @@ namespace ComplexCRUDApplication.Services
 {
     public interface ICustomerService
     {
-        public List<TblCustomer> GetAll();
+        public Task<List<TblCustomer>> GetAll();
     }
 }

@@ -1,5 +1,6 @@
 ﻿using ComplexCRUDApplication.Models;
 using ComplexCRUDApplication.Repos;
+using Microsoft.EntityFrameworkCore;
 
 namespace ComplexCRUDApplication.Services
 {
@@ -10,10 +11,10 @@ namespace ComplexCRUDApplication.Services
         {
             _dataContext = dataContext;
         } 
-        public List<TblCustomer> GetAll()
+        public async Task<List<TblCustomer>> GetAll()
         {
             List<TblCustomer> CustomersList;
-            CustomersList = _dataContext.TblCustomers.ToList();
+            CustomersList = await _dataContext.TblCustomers.ToListAsync();
             return CustomersList;
         }
     }

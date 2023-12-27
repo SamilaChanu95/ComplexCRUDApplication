@@ -22,11 +22,11 @@ namespace ComplexCRUDApplication.Controllers
 
         [HttpGet]
         [Route("customer-list")]
-        public IActionResult GetAll() 
+        public async Task<IActionResult> GetCustomerList() 
         {
             try 
             {
-                var customer = _customerService.GetAll();
+                var customer = await _customerService.GetAll();
                 // List<TblCustomer> tblCustomers = _customerService.GetAll();
                 List<CustomerDto> CustomersList;
                 if (customer.Count > 0)
