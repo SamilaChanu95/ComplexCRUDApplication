@@ -2,6 +2,8 @@ using AutoMapper;
 using ComplexCRUDApplication.Helper;
 using ComplexCRUDApplication.Repos;
 using ComplexCRUDApplication.Services;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -39,6 +41,15 @@ builder.Services.AddCors(cors => cors.AddDefaultPolicy(build =>
     build.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
 }));
 
+builder.Services.AddRateLimiter(opt => 
+    opt.AddFixedWindowLimiter(policyName: "fixedWindow", options => { 
+        options.Window = TimeSpan.FromSeconds(1);
+        options.PermitLimit = 1;
+        options.QueueLimit = 1;
+        options.QueueProcessingOrder = System.Threading.RateLimiting.QueueProcessingOrder.OldestFirst;
+    }).RejectionStatusCode = 600
+);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -58,6 +69,8 @@ app.UseHttpsRedirection();
 /*app.UseCors("corspolicy");*/
 
 app.UseCors();
+
+app.UseRateLimiter();
 
 app.UseAuthorization();
 

@@ -6,12 +6,14 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Linq.Expressions;
 
 namespace ComplexCRUDApplication.Controllers
 {
     /*[DisableCors]*/
     /*[EnableCors("corspolicy")]*/
+    [EnableRateLimiting("fixedWindow")]
     [Route("api/[controller]")]
     [ApiController]
     public class CustomerController : ControllerBase
@@ -27,6 +29,7 @@ namespace ComplexCRUDApplication.Controllers
         }
 
         /*[EnableCors("corspolicy")]*/
+        /*[DisableRateLimiting]*/
         [HttpGet]
         [Route("customer-list")]
         public async Task<IActionResult> GetCustomerList() 
