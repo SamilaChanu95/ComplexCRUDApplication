@@ -28,6 +28,17 @@ var config = new MapperConfiguration(cfg => cfg.AddProfile(new MappingHandler())
 IMapper mapper = config.CreateMapper();
 builder.Services.AddSingleton(mapper);
 
+// declare the cors policy
+/*builder.Services.AddCors(cors => cors.AddPolicy("corspolicy", build => {
+    build.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader();
+}));*/
+
+// declare the default cors, allow for any domain
+builder.Services.AddCors(cors => cors.AddDefaultPolicy(build =>
+{
+    build.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+}));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -38,6 +49,15 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+/*app.UseCors(options => {
+    options.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader();
+});*/
+
+// Use cors policy
+/*app.UseCors("corspolicy");*/
+
+app.UseCors();
 
 app.UseAuthorization();
 

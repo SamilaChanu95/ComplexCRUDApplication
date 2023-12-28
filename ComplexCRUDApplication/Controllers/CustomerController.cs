@@ -2,6 +2,7 @@
 using ComplexCRUDApplication.Dtos;
 using ComplexCRUDApplication.Models;
 using ComplexCRUDApplication.Services;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,8 @@ using System.Linq.Expressions;
 
 namespace ComplexCRUDApplication.Controllers
 {
+    /*[DisableCors]*/
+    /*[EnableCors("corspolicy")]*/
     [Route("api/[controller]")]
     [ApiController]
     public class CustomerController : ControllerBase
@@ -23,6 +26,7 @@ namespace ComplexCRUDApplication.Controllers
             _logger = logger;
         }
 
+        /*[EnableCors("corspolicy")]*/
         [HttpGet]
         [Route("customer-list")]
         public async Task<IActionResult> GetCustomerList() 
