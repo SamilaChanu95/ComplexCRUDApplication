@@ -54,7 +54,7 @@ namespace ComplexCRUDApplication.Controllers
             {
                 bool existing = await _customerService.IsExistsCustomer(code);
                 TblCustomer tblCustomer = await _customerService.GetCustomerByCode(code);
-                return existing ? Ok(_mapper.Map<CustomerDto>(tblCustomer)) : Ok(new ApiResponse { ResponseCode = 400, Result = "This code dosen't exists.", ErrorMessage = "Bad Request." });
+                return existing ? Ok(_mapper.Map<CustomerDto>(tblCustomer)) : Ok(new ApiResponse { ResponseCode = 404, Result = "This data not found.", ErrorMessage = "Not Found." });
             }
             catch (Exception ex)
             {
@@ -96,7 +96,7 @@ namespace ComplexCRUDApplication.Controllers
                 if (existing)
                    tblCustomer = await _customerService.GetCustomerByCode(code);
                 else
-                    return Ok(new ApiResponse { ResponseCode = 400, Result = "This code doesn't exists.", ErrorMessage = "Bad Request." });
+                    return Ok(new ApiResponse { ResponseCode = 404, Result = "This data not found.", ErrorMessage = "Not Found." });
                 int changes = await _customerService.DeleteCustomer(tblCustomer);
                 return changes > 0 ? Ok(new ApiResponse { ResponseCode = 200, Result = "Successfully Deleted.", ErrorMessage = "None." }) : Ok(new ApiResponse { ResponseCode = 400, Result = "Error in Deleting.", ErrorMessage = "Bad Request." });
             }
@@ -119,7 +119,7 @@ namespace ComplexCRUDApplication.Controllers
                 if (existing)
                     updates = await _customerService.UpdateCustomer(tblCustomer);
                 else
-                    return Ok(new ApiResponse { ResponseCode = 400, Result = "This code doesn't exists.", ErrorMessage = "Bad Request." });
+                    return Ok(new ApiResponse { ResponseCode = 404, Result = "This data not found.", ErrorMessage = "Not Found." });
                 return updates > 0 ? Ok(new ApiResponse { ResponseCode = 200, Result = "Successfully Updated.", ErrorMessage = "None." }) : Ok(new ApiResponse { ResponseCode = 400, Result = "Error in Updating.", ErrorMessage = "Bad Request." });
             }
             catch (Exception ex)
