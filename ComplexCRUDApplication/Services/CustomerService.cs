@@ -8,33 +8,67 @@ namespace ComplexCRUDApplication.Services
     public class CustomerService : ICustomerService
     {
         private readonly DataContext _dataContext;
-        public CustomerService(DataContext dataContext) 
+        private readonly ILogger<CustomerService> _logger;
+        public CustomerService(DataContext dataContext, ILogger<CustomerService> logger) 
         {
             _dataContext = dataContext;
+            _logger = logger;
         }
 
         public async Task<int> AddCustomer(TblCustomer tblCustomer)
         {
-            await _dataContext.TblCustomers.AddAsync(tblCustomer);
-            return await _dataContext.SaveChangesAsync();            
+            try 
+            {
+                await _dataContext.TblCustomers.AddAsync(tblCustomer);
+                return await _dataContext.SaveChangesAsync();
+            }
+            catch (Exception ex) 
+            {
+                _logger.LogError($"DB Error in Creating Customer : {ex.Message}.");
+                return 0;
+            }
         }
 
         public async Task<int> DeleteCustomer(TblCustomer tblCustomer)
         {
-            _dataContext.TblCustomers.Remove(tblCustomer);
-            return await _dataContext.SaveChangesAsync();
+            try 
+            {
+                _dataContext.TblCustomers.Remove(tblCustomer);
+                return await _dataContext.SaveChangesAsync();
+            }
+            catch (Exception ex) 
+            {
+                _logger.LogError($"DB Error in Deleting Customer : {ex.Message}.");
+                return 0;
+            }
         }
 
         public async Task<List<TblCustomer>> GetAll()
         {
-            List<TblCustomer> CustomersList = await _dataContext.TblCustomers.ToListAsync();
-            return CustomersList;
+            try 
+            {
+                List<TblCustomer> CustomersList = await _dataContext.TblCustomers.ToListAsync();
+                return CustomersList;
+            }
+            catch (Exception ex) 
+            {
+                _logger.LogError($"DB Error in Getting Customers List : {ex.Message}.");
+                return new List<TblCustomer>();
+            }
         }
 
         public async Task<TblCustomer> GetCustomerByCode(string code)
         {
-            TblCustomer Customer = await _dataContext.TblCustomers.Where(c => c.Code == code).FirstOrDefaultAsync() ?? new TblCustomer { Code = "0" };
-            return Customer;
+            try 
+            {
+                TblCustomer Customer = await _dataContext.TblCustomers.Where(c => c.Code == code).FirstOrDefaultAsync() ?? new TblCustomer { Code = "0" };
+                return Customer;
+            }
+            catch (Exception ex) 
+            {
+                _logger.LogError($"DB Error in Getting Customer : {ex.Message}.");
+                return new TblCustomer();
+            }
         }
 
         public async Task<bool> IsExistsCustomer(string code)
@@ -45,16 +79,24 @@ namespace ComplexCRUDApplication.Services
 
         public async Task<int> UpdateCustomer(TblCustomer tblCustomer)
         {
-            TblCustomer UpdatedCustomer = await GetCustomerByCode(tblCustomer.Code);
-            UpdatedCustomer.Code = tblCustomer.Code;
-            UpdatedCustomer.Name = tblCustomer.Name;
-            UpdatedCustomer.Phone = tblCustomer.Phone;
-            UpdatedCustomer.Email = tblCustomer.Email;
-            UpdatedCustomer.CreditLimit = tblCustomer.CreditLimit;
-            UpdatedCustomer.TaxCode = tblCustomer.TaxCode;
-            UpdatedCustomer.IsActive = tblCustomer.IsActive;
-            _dataContext.TblCustomers.Update(UpdatedCustomer);
-            return await _dataContext.SaveChangesAsync();
+            try 
+            {
+                TblCustomer UpdatedCustomer = await GetCustomerByCode(tblCustomer.Code);
+                UpdatedCustomer.Code = tblCustomer.Code;
+                UpdatedCustomer.Name = tblCustomer.Name;
+                UpdatedCustomer.Phone = tblCustomer.Phone;
+                UpdatedCustomer.Email = tblCustomer.Email;
+                UpdatedCustomer.CreditLimit = tblCustomer.CreditLimit;
+                UpdatedCustomer.TaxCode = tblCustomer.TaxCode;
+                UpdatedCustomer.IsActive = tblCustomer.IsActive;
+                _dataContext.TblCustomers.Update(UpdatedCustomer);
+                return await _dataContext.SaveChangesAsync();
+            }
+            catch (Exception ex) 
+            {
+                _logger.LogError($"DB Error in Updating Customer : {ex.Message}.");
+                return 0;
+            }
         }
     }
 }

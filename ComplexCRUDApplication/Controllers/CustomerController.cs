@@ -15,10 +15,12 @@ namespace ComplexCRUDApplication.Controllers
     {
         private readonly ICustomerService _customerService;
         private readonly IMapper _mapper;
-        public CustomerController(ICustomerService customerService, IMapper mapper) 
+        private readonly ILogger<CustomerController> _logger;
+        public CustomerController(ICustomerService customerService, IMapper mapper, ILogger<CustomerController> logger)
         {
-            this._customerService = customerService;
-            this._mapper = mapper;
+            _customerService = customerService;
+            _mapper = mapper;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -28,20 +30,21 @@ namespace ComplexCRUDApplication.Controllers
             try 
             {
                 var customer = await _customerService.GetAll();
-                // List<TblCustomer> tblCustomers = _customerService.GetAll();
                 List<CustomerDto> CustomersList;
                 if (customer.Count > 0)
                 {
                     CustomersList = _mapper.Map<List<CustomerDto>>(customer);
+                    _logger.LogInformation("Successfully returned the Customers List.");
                     return Ok(CustomersList);
                 }
                 else {
+                    _logger.LogInformation("No Customers.");
                     return NoContent();
                 }
             }
             catch (Exception ex) 
             {
-                Console.WriteLine(ex);
+                _logger.LogError("Error in Getting Customers List : {0}.", ex.Message);
                 return BadRequest();
             }
         }
@@ -58,7 +61,7 @@ namespace ComplexCRUDApplication.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError($"Error in Getting Customer : {ex.Message}.");
                 return BadRequest();
             }
         }
@@ -80,7 +83,7 @@ namespace ComplexCRUDApplication.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError($"Error in Creating Customer : {ex.Message}.");
                 return BadRequest();
             }
         }
@@ -102,7 +105,7 @@ namespace ComplexCRUDApplication.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError($"Error in Deleting Customer : {ex.Message}.");
                 return BadRequest();
             }
         }
@@ -124,7 +127,7 @@ namespace ComplexCRUDApplication.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                _logger.LogError($"Error in Updating Customer : {ex.Message}.");
                 return BadRequest();
             }
         }

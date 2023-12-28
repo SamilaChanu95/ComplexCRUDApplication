@@ -3,8 +3,17 @@ using ComplexCRUDApplication.Helper;
 using ComplexCRUDApplication.Repos;
 using ComplexCRUDApplication.Services;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, configuration) => configuration.ReadFrom.Configuration(context.Configuration));
+
+/*builder.Services.AddSerilog(options => {
+    options.MinimumLevel.Debug()
+        .WriteTo.Console()
+        .WriteTo.File(builder.Configuration.GetSection("Logging:LoggingPath").Value, rollingInterval: RollingInterval.Day);
+});*/
 
 // Add services to the container.
 
