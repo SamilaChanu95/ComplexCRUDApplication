@@ -2,6 +2,7 @@
 using ComplexCRUDApplication.Dtos;
 using ComplexCRUDApplication.Models;
 using ComplexCRUDApplication.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -13,6 +14,7 @@ namespace ComplexCRUDApplication.Controllers
 {
     /*[DisableCors]*/
     /*[EnableCors("corspolicy")]*/
+    [Authorize]
     [EnableRateLimiting("fixedWindow")]
     [Route("api/[controller]")]
     [ApiController]
@@ -30,6 +32,7 @@ namespace ComplexCRUDApplication.Controllers
 
         /*[EnableCors("corspolicy")]*/
         /*[DisableRateLimiting]*/
+        [AllowAnonymous]
         [HttpGet]
         [Route("customer-list")]
         public async Task<IActionResult> GetCustomerList() 

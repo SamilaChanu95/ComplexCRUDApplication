@@ -34,7 +34,7 @@ public partial class TblCustomer
     public decimal? CreditLimit { get; set; }
 
     [Column("is_active")]
-    public bool? IsActive { get; set; }
+    public bool IsActive { get; set; }
 
     [Column("tax_code")]
     public int? TaxCode { get; set; }

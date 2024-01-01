@@ -2,6 +2,7 @@ using AutoMapper;
 using ComplexCRUDApplication.Helper;
 using ComplexCRUDApplication.Repos;
 using ComplexCRUDApplication.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +30,9 @@ builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(build
 var config = new MapperConfiguration(cfg => cfg.AddProfile(new MappingHandler()));
 IMapper mapper = config.CreateMapper();
 builder.Services.AddSingleton(mapper);
+
+// register the basic authentication
+builder.Services.AddAuthentication("BasicAuthentication").AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
 
 // declare the cors policy
 /*builder.Services.AddCors(cors => cors.AddPolicy("corspolicy", build => {
@@ -71,6 +75,9 @@ app.UseHttpsRedirection();
 app.UseCors();
 
 app.UseRateLimiter();
+
+// enable the authentication
+app.UseAuthentication();
 
 app.UseAuthorization();
 
