@@ -1,5 +1,6 @@
 ﻿using ComplexCRUDApplication.Models;
 using ComplexCRUDApplication.Repos;
+using ComplexCRUDApplication.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -19,13 +20,15 @@ namespace ComplexCRUDApplication.Controllers
         private readonly ILogger<AuthorizationController> _logger;
         private readonly JwtSettings _jwtSettings;
         private readonly IConfiguration _configuration;
+        private readonly IRefreshHandler _refresh;
 
-        public AuthorizationController(DataContext  dataContext, ILogger<AuthorizationController> logger, IOptions<JwtSettings> _jwtOptions, IConfiguration configuration)
+        public AuthorizationController(DataContext  dataContext, ILogger<AuthorizationController> logger, IOptions<JwtSettings> _jwtOptions, IConfiguration configuration, IRefreshHandler refreshHandler)
         {
             _dataContext = dataContext;
             _logger = logger;
             _jwtSettings = _jwtOptions.Value;
             _configuration = configuration;
+            _refresh = refreshHandler;
         }
 
         [HttpPost("generate-token")]
@@ -50,7 +53,7 @@ namespace ComplexCRUDApplication.Controllers
                 };
                 var token = tokenHandler.CreateToken(tokenDescriptor);
                 var finalToken = tokenHandler.WriteToken(token);
-                return Ok(finalToken);
+                return Ok(new TokenResponse() { Token = finalToken, RefreshToken = await _refresh.GenerateToken(userCredential.Username) });
             }
             else 
             {
