@@ -1,5 +1,6 @@
 using AutoMapper;
 using ComplexCRUDApplication.Helper;
+using ComplexCRUDApplication.Models;
 using ComplexCRUDApplication.Repos;
 using ComplexCRUDApplication.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -45,14 +46,18 @@ builder.Services.AddCors(cors => cors.AddDefaultPolicy(build =>
     build.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
 }));
 
-builder.Services.AddRateLimiter(opt => 
-    opt.AddFixedWindowLimiter(policyName: "fixedWindow", options => { 
+builder.Services.AddRateLimiter(opt =>
+    opt.AddFixedWindowLimiter(policyName: "fixedWindow", options =>
+    {
         options.Window = TimeSpan.FromSeconds(1);
         options.PermitLimit = 1;
         options.QueueLimit = 1;
         options.QueueProcessingOrder = System.Threading.RateLimiting.QueueProcessingOrder.OldestFirst;
     }).RejectionStatusCode = 600
 );
+
+var _jwtSettings = builder.Configuration.GetSection("JwtSettings");
+builder.Services.Configure<JwtSettings>(_jwtSettings);
 
 var app = builder.Build();
 
