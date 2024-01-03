@@ -32,7 +32,7 @@ namespace ComplexCRUDApplication.Controllers
 
         /*[EnableCors("corspolicy")]*/
         /*[DisableRateLimiting]*/
-        [AllowAnonymous]
+        /*[AllowAnonymous]*/
         [HttpGet]
         [Route("customer-list")]
         public async Task<IActionResult> GetCustomerList() 
