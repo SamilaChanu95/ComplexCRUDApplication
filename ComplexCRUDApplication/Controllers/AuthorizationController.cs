@@ -1,15 +1,12 @@
 ﻿using ComplexCRUDApplication.Models;
 using ComplexCRUDApplication.Repos;
 using ComplexCRUDApplication.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.AccessControl;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 
 namespace ComplexCRUDApplication.Controllers

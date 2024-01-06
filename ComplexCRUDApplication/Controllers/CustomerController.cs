@@ -14,7 +14,8 @@ namespace ComplexCRUDApplication.Controllers
 {
     /*[DisableCors]*/
     /*[EnableCors("corspolicy")]*/
-    [Authorize]
+    /*[Authorize]*/
+    [AllowAnonymous]
     [EnableRateLimiting("fixedWindow")]
     [Route("api/[controller]")]
     [ApiController]
