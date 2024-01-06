@@ -1,5 +1,6 @@
 ﻿using ComplexCRUDApplication.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -110,10 +111,97 @@ namespace ComplexCRUDApplication.Controllers
             return Ok(response);
         }
 
+        [HttpGet]
+        [Route("get-image")]
+        public async Task<IActionResult> GetImage(string productCode) 
+        {
+            try 
+            {
+                string hostingUrl = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}";
+                if (IsDirectoryExists(productCode))
+                {
+                    string folderPath = GetFilepath(productCode);
+                    //string[] imageURLs = new string [20];
+                    List<string> imageURLs = new List<string>();
+                    var imageFiles = Directory.EnumerateFiles(folderPath, "*");
+                    if (imageFiles.Any())
+                    {
+                        foreach (var imageFile in imageFiles)
+                        {
+                            string[] nameArray = imageFile.Split("\\");
+                            string imageName = nameArray[nameArray.Length - 1];
+                            string ImageUrl = hostingUrl + "/upload/product/" + productCode + "/" + imageName;
+                            imageURLs.Add(imageFile.ToString());
+                            // imageURLs.Add(ImageUrl.ToString());
+                        }
+                        _logger.LogInformation("Every Image's URLs successfully returned...!");
+                        DownloadImage(imageURLs);
+                        return Ok(imageURLs);
+                    }
+                    else 
+                    {
+                        _logger.LogError("Image file not found...!");
+                        return NotFound();
+                    }
+                }
+                else 
+                {
+                    _logger.LogError("Requested productCode not found...!");
+                    return NotFound();
+                }
+            }
+            catch (Exception ex) 
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest(ex.Message);
+            }
+        }
+
         [NonAction]
         public string GetFilepath(string productCode) 
         {
             return _webHostEnvironment.WebRootPath + "\\upload\\product\\" + productCode;
         }
+
+        [NonAction]
+        public bool IsDirectoryExists(string productCode) 
+        {
+            string path = GetFilepath(productCode);
+            if (System.IO.Directory.Exists(path))
+            {
+                return true;
+            }
+            else 
+            {
+                return false;
+            }
+        }
+
+        [NonAction]
+        public async Task<IActionResult> DownloadImage(List<string> hostUrls) 
+        {
+            try 
+            {
+                foreach(var hostUrl in hostUrls)
+                {
+                    string[] imageNames = hostUrl.Split("\\");
+                    string imageName = imageNames[imageNames.Length - 1];
+                    MemoryStream stream = new MemoryStream();
+                    using (FileStream fileStream = new FileStream(hostUrl, FileMode.Open)) 
+                    {
+                        await fileStream.CopyToAsync(stream);
+                    }
+                    stream.Position = 0;
+                    return File(stream, "image/png", imageName);
+                }
+                return Ok();
+            }
+            catch (Exception ex) 
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest();  
+            }
+        }
+
     }
 }

@@ -108,6 +108,9 @@ app.UseRateLimiter();
 // enable the authentication
 app.UseAuthentication();
 
+// enable this middleware to enable the static files
+app.UseStaticFiles();
+
 app.UseAuthorization();
 
 app.MapControllers();
