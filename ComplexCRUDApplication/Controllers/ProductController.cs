@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.IO.Compression;
 
 namespace ComplexCRUDApplication.Controllers
 {
@@ -177,22 +178,54 @@ namespace ComplexCRUDApplication.Controllers
             }
         }
 
-        [NonAction]
-        public async Task<IActionResult> DownloadImage(List<string> hostUrls) 
+        [HttpGet]
+        [Route("download-image")]
+        public async Task<IActionResult> DownloadImage(string productCode) 
         {
             try 
             {
-                foreach(var hostUrl in hostUrls)
+                if (IsDirectoryExists(productCode)) 
                 {
-                    string[] imageNames = hostUrl.Split("\\");
-                    string imageName = imageNames[imageNames.Length - 1];
-                    MemoryStream stream = new MemoryStream();
-                    using (FileStream fileStream = new FileStream(hostUrl, FileMode.Open)) 
+                    string folderPath = GetFilepath(productCode);
+                    var imageFiles = Directory.EnumerateFiles(folderPath, "*");
+                    if (imageFiles.Any())
                     {
-                        await fileStream.CopyToAsync(stream);
+                        if (imageFiles.Count() == 1)
+                        {
+                            foreach (var imageFile in imageFiles)
+                            {
+                                //string[] imagenameArray = imageFile.Split("\\");
+                                //string imageName = imagenameArray[imagenameArray.Length - 1];
+                                string imageName = Path.GetFileName(imageFile);
+                                MemoryStream stream = new MemoryStream();
+                                using (FileStream fileStream = new FileStream(imageFile, FileMode.Open))
+                                {
+                                    await fileStream.CopyToAsync(stream);
+                                }
+                                stream.Position = 0;
+                                return File(stream, "image/png", imageName);
+                            }
+                        }
+                        else 
+                        {
+                            MemoryStream zipMemoryStream = new MemoryStream();
+                            using (ZipArchive archive = new ZipArchive(zipMemoryStream, ZipArchiveMode.Create, true)) 
+                            {
+                                foreach (var imageFile in imageFiles) 
+                                {
+                                    string entryName = Path.GetFileName(imageFile);
+                                    archive.CreateEntryFromFile(imageFile.ToString(), entryName);
+                                }
+                            }
+                            zipMemoryStream.Seek(0, SeekOrigin.Begin);
+                            return File(zipMemoryStream, "application/zip", productCode);
+                        }
                     }
-                    stream.Position = 0;
-                    return File(stream, "image/png", imageName);
+                    else 
+                    {
+                        _logger.LogError("No files.");
+                        return NotFound();
+                    }
                 }
                 return Ok();
             }
