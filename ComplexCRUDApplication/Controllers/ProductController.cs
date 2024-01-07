@@ -131,11 +131,11 @@ namespace ComplexCRUDApplication.Controllers
                             string[] nameArray = imageFile.Split("\\");
                             string imageName = nameArray[nameArray.Length - 1];
                             string ImageUrl = hostingUrl + "/upload/product/" + productCode + "/" + imageName;
-                            imageURLs.Add(imageFile.ToString());
-                            // imageURLs.Add(ImageUrl.ToString());
+                            //imageURLs.Add(imageFile.ToString());
+                            imageURLs.Add(ImageUrl.ToString());
                         }
                         _logger.LogInformation("Every Image's URLs successfully returned...!");
-                        DownloadImage(imageURLs);
+                        // DownloadImage(imageURLs);
                         return Ok(imageURLs);
                     }
                     else 
